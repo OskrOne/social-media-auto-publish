@@ -1,14 +1,19 @@
+const fs = require('fs');
+const https = require('https');
 const express = require('express');
 const path = require('path');
-const app = express();
+
 const port = 3001;
+const options = {
+    key: fs.readFileSync('sslcert/server.key', 'utf8'),
+    cert: fs.readFileSync('sslcert/server.crt', 'utf8')
+};
+const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-    res.send('Hello World')
-});
+const httpServer = https.createServer(options, app);
 
-app.listen(port, () => {
-    console.log(`Its running on port ${port}`);
-})
+httpServer.listen(port, () => {
+    console.log("server starting on port : " + port)
+});
